@@ -15,13 +15,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guillermo.CRUD_PUXLES.model.Producto;
+import com.guillermo.CRUD_PUXLES.service.SequenceGeneratorService;
 import com.guillermo.CRUD_PUXLES.service.api.ProductoServiceAPI;
 
 @RestController
 @RequestMapping("/producto/api/v1")
 @CrossOrigin("*")
 public class ProductoController {
-	
+
+	@Autowired
+	private SequenceGeneratorService sequenceGenerator;
+
 	@Autowired
 	private ProductoServiceAPI productoServiceAPI;
 
@@ -29,7 +33,7 @@ public class ProductoController {
 	public List<Producto> getAll() {
 		return productoServiceAPI.getAll();
 	}
-	
+
 	@GetMapping(value = "/find/{id}")
 	public Producto find(@PathVariable Integer id) {
 		return productoServiceAPI.get(id);
@@ -37,6 +41,13 @@ public class ProductoController {
 
 	@PostMapping(value = "/save")
 	public ResponseEntity<Producto> save(@RequestBody @Validated Producto producto) {
+		producto.setId(sequenceGenerator.generateSequence(Producto.SEQUENCE_NAME));
+		Producto obj = productoServiceAPI.save(producto);
+		return new ResponseEntity<Producto>(obj, HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/update")
+	public ResponseEntity<Producto> update(@RequestBody @Validated Producto producto) {
 		Producto obj = productoServiceAPI.save(producto);
 		return new ResponseEntity<Producto>(obj, HttpStatus.OK);
 	}
@@ -49,7 +60,7 @@ public class ProductoController {
 		} else {
 			return new ResponseEntity<Producto>(HttpStatus.NO_CONTENT);
 		}
-		
+
 		return new ResponseEntity<Producto>(producto, HttpStatus.OK);
 	}
 
