@@ -3,8 +3,14 @@ package com.guillermo.CRUD_PUXLES.model;
 import java.math.BigDecimal;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "productInventory")
 public class Producto {
+	
+	@Transient
+    public static final String SEQUENCE_NAME = "users_sequence";
 	
 	@Id
 	private int id;
